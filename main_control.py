@@ -87,11 +87,14 @@ while(1):
                 sg_2 = -b[2] + 128
             else:
                 sg_2 = b[2]
-            print sg_1
-            print sg_2
+            if sg_1 > 255:
+                sg_1 = 255
+            if sg_2 > 255:
+                sg_2 = 255
             r = [chr(sg_1),chr(sg_2)]
+            print "Right Set"
             print r
-            json.send({'command':'put', 'key':'SET_L_RPM', 'value':r })
+            json.send({'command':'put', 'key':'SET_R_RPM', 'value':r })
         elif( b[0] == 1):
             #r = [str(unichr(b[1])),str(unichr(b[2]))]
             if b[1] < 0:
@@ -102,8 +105,10 @@ while(1):
                 sg_2 = -b[2] + 128
             else:
                 sg_2 = b[2]
-            print sg_1
-            print sg_2
+            if sg_1 > 255:
+                sg_1 = 255
+            if sg_2 > 255:
+                sg_2 = 255
             r = [chr(sg_1),chr(sg_2)]
             print r
             json.send({'command':'put', 'key':'SET_L_RPM', 'value':r })
