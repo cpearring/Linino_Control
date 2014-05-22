@@ -40,41 +40,13 @@ class RobotStatus:
     BrakeStatus = 0
     Value = 0
     def updateStatus(self):
-        L = self.Value.get('RPM_STATUS')
-        if L is not None:
-            self.LeftRPM = (ord(L[0])-1) + ((ord(L[1])-1)<<8)
-            self.RightRPM = (ord(L[2])-1) + ((ord(L[3])-1)<<8)
-            if self.LeftRPM >= 32511:
-                self.LeftRPM = -(self.LeftRPM%32511)
-            if self.RightRPM >= 32511:
-                self.RightRPM = -(self.RightRPM%32511)
+        t_string = self.Value.get('RPM_STATUS')
+        if t_string is not None:
+            self.LeftRPM = int(t_string[0:t_string.find(":")])
+            self.RightRPM = int(t_string[t_string.find(":")+1:])
+            print t_string
             print self.LeftRPM
             print self.RightRPM
-	'''
-        #print "Entering updateStatus()"
-        L = self.Value.get('LEFT_RPM')
-        #print "Got value from Value.get()"
-	#Left side--------------------------------------------------------
-        if L is not None:
-            if ( len(L) == 0 ):
-                self.LeftRPM = 0
-            elif ( len(L) == 1 ):
-                self.LeftRPM = (ord(L[0]))#+ ((ord(L[1])-1)<<8)
-            else:
-                self.LeftRPM = (ord(L[0])) + ((ord(L[1]))<<8)
-            print self.LeftRPM
-        #Right Side-------------------------------------------------------
-        L = self.Value.get('RIGHT_RPM')
-        if L is not None:
-            if ( len(L) == 0 ):
-                self.LeftRPM = 0
-            elif ( len(L) == 1 ):
-                self.LeftRPM = (ord(L[0]))
-            else:
-                self.LeftRPM = (ord(L[0])) + ((ord(L[1]))<<8)
-            print self.LeftRPM 
-        #self.RightRPM = ord(L[2])+ (ord(L[3])<<8)
-        #print "Exiting updateStatus()"'''
     def generatePacket(self):
         '''s = []
         s.append(self.RightRPM%256)
@@ -105,7 +77,22 @@ while(1):
     if( i != None):
         #command recived. Process it----------------------------
         b = unpack('<bbb', i)
-        if( b[0] == 1):
+	if( b[0] == 2):
+            #r = [str(unichr(b[1])),str(unichr(b[2]))]
+            if b[1] < 0:
+                sg_1 = -b[1] + 128
+            else:
+                sg_1 = b[1]
+            if b[2] < 0:
+                sg_2 = -b[2] + 128
+            else:
+                sg_2 = b[2]
+            print sg_1
+            print sg_2
+            r = [chr(sg_1),chr(sg_2)]
+            print r
+            json.send({'command':'put', 'key':'SET_L_RPM', 'value':r })
+        elif( b[0] == 1):
             #r = [str(unichr(b[1])),str(unichr(b[2]))]
             if b[1] < 0:
                 sg_1 = -b[1] + 128
