@@ -23,13 +23,12 @@ class mysocket:
         self.sock.bind(("192.168.240.1", port))
         self.sock.setblocking(0)
     def mysend(self, msg):
-        #self.sock.sendto(bytes(msg), (self.UDP_IP, self.UDP_PORT)) Probably th right line
         self.sock.sendto(msg, (self.UDP_IP, self.UDP_PORT))
 
     def myreceive(self):
         result = select.select([self.sock],[],[],0)
         if(result[0] != []):
-            return result[0][0].recv(4) 
+            return result[0][0].recv(64) 
         return None
     def end(self):
         self.sock.close()
@@ -44,18 +43,10 @@ class RobotStatus:
         if t_string is not None:
             self.LeftRPM = int(t_string[0:t_string.find(":")])
             self.RightRPM = int(t_string[t_string.find(":")+1:])
-            print t_string
+
             print self.LeftRPM
             print self.RightRPM
     def generatePacket(self):
-        '''s = []
-        s.append(self.RightRPM%256)
-        s.append(self.RightRPM/256)
-
-        s.append(self.LeftRPM%256)
-        s.append(self.LeftRPM/256)
-
-        s.append(self.BrakeStatus)'''
         #print "Packing values..."
         return pack('<hhb', self.RightRPM, self.LeftRPM, self.BrakeStatus)
         #print "Finished packing"
@@ -73,45 +64,16 @@ while(1):
     start = time.time() 
     
     s_test.mysend(robot.generatePacket())
-    i = s_test.myreceive()
-    if( i != None):
-        #command recived. Process it----------------------------
-        b = unpack('<bbb', i)
-	if( b[0] == 2):
-            #r = [str(unichr(b[1])),str(unichr(b[2]))]
-            if b[1] < 0:
-                sg_1 = -b[1] + 128
-            else:
-                sg_1 = b[1]
-            if b[2] < 0:
-                sg_2 = -b[2] + 128
-            else:
-                sg_2 = b[2]
-            if sg_1 > 255:
-                sg_1 = 255
-            if sg_2 > 255:
-                sg_2 = 255
-            r = [chr(sg_1),chr(sg_2)]
-            print "Right Set"
-            print r
-            json.send({'command':'put', 'key':'SET_R_RPM', 'value':r })
-        elif( b[0] == 1):
-            #r = [str(unichr(b[1])),str(unichr(b[2]))]
-            if b[1] < 0:
-                sg_1 = -b[1] + 128
-            else:
-                sg_1 = b[1]
-            if b[2] < 0:
-                sg_2 = -b[2] + 128
-            else:
-                sg_2 = b[2]
-            if sg_1 > 255:
-                sg_1 = 255
-            if sg_2 > 255:
-                sg_2 = 255
-            r = [chr(sg_1),chr(sg_2)]
-            print r
-            json.send({'command':'put', 'key':'SET_L_RPM', 'value':r })
+    raw_Packet = s_test.myreceive()
+    if raw_Packet is not None:
+            #print raw_Packet
+            SetLeftRPM = int(raw_Packet[0:raw_Packet.find(":")])
+            SetRightRPM = int(raw_Packet[raw_Packet.find(":")+1:raw_Packet.find("n")])
+            print SetRightRPM;
+            print SetLeftRPM;
+            #json.send({'command':'put', 'key':'SET_R_RPM', 'value':SetRightRPM })
+        
+            json.send({'command':'put', 'key':'SET_L_RPM', 'value':SetLeftRPM })
     #print "Hanging in json.send?"
     #if CAN message recieved, update our model and then send out new info to control station   
     robot.updateStatus()
