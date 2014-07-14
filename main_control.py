@@ -13,7 +13,7 @@ json = TCPJSONClient('', 5700)
 
 
 s_test = MySocket()
-s_test.connect('192.168.240.155', 30001)
+s_test.connect('192.168.1.155', 30001)
 #s_test.mysend("Hello World")
 
 
