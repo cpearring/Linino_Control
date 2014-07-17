@@ -9,11 +9,12 @@ from struct import *
 sys.path.insert(0, '/usr/lib/python2.7/bridge/') 
 from bridgeclient import BridgeClient as bridgeclient
 from tcp import TCPJSONClient
+#import simplejson as json
 json = TCPJSONClient('', 5700)
 
 
 s_test = MySocket()
-s_test.connect('192.168.1.155', 30001)
+s_test.connect('192.168.240.155', 30001)
 #s_test.mysend("Hello World")
 
 
@@ -25,10 +26,9 @@ while(1):
     
     s_test.mysend(robot.generatePacket())
     raw_Packet = s_test.myreceive()
-
     if raw_Packet is not None:
             raw_Packet.strip('\x00')
-            print raw_Packet
+            #print raw_Packet
             #print raw_Packet
             SetLeftRPM = int(raw_Packet[0:raw_Packet.find(":")])
             #print "Raw packet.find('\x00') " + str(raw_Packet.find("\x00"))
@@ -36,9 +36,10 @@ while(1):
             
             print SetRightRPM;
             print SetLeftRPM;
-            json.send({'command':'put', 'key':'SET_R_RPM', 'value':str(SetRightRPM) })
-        
-            json.send({'command':'put', 'key':'SET_L_RPM', 'value':str(SetLeftRPM) })
+            #json.send({'command':'put', 'key':'SET_R_RPM', 'value':str(SetRightRPM) })
+            json.send({'command':'put', 'key':'SET_RPM', 'value':str(SetLeftRPM)+':'+str(SetRightRPM) })
+      
+            #json.send({'command':'put', 'key':'SET_L_RPM', 'value':str(SetLeftRPM) })
             #print str(SetLeftRPM)+":"+str(SetRightRPM)
             #json.send({'command':'put', 'key':'RPM_STATUS', 'value':str(SetLeftRPM)+":"+str(SetRightRPM) })
     #print "Hanging in json.send?"
