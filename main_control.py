@@ -14,7 +14,7 @@ json = TCPJSONClient('', 5700)
 
 
 s_test = MySocket()
-s_test.connect('192.168.240.155', 30001)
+s_test.connect('192.168.240.155', 30001) #socket for computer?
 #s_test.mysend("Hello World")
 
 
@@ -42,6 +42,10 @@ while(1):
             #json.send({'command':'put', 'key':'SET_L_RPM', 'value':str(SetLeftRPM) })
             #print str(SetLeftRPM)+":"+str(SetRightRPM)
             #json.send({'command':'put', 'key':'RPM_STATUS', 'value':str(SetLeftRPM)+":"+str(SetRightRPM) })
+
+            #here I need to put in the CAN data packet to be sent every second?
+            #json.send({'data':'put', 'key':'LS_Battery_Voltage', 'value':str(LS_Battery_Voltage) })
+            
     #print "Hanging in json.send?"
     #if CAN message recieved, update our model and then send out new info to control station   
     robot.updateStatus()
