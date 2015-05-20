@@ -6,8 +6,8 @@ from RobotStatus import *
 from MySocket import *
 from struct import *
 
-sys.path.insert(0, '/usr/lib/python2.7/bridge/') 
-from bridgeclient import BridgeClient as bridgeclient
+sys.path.insert(0, '/usr/lib/python2.7/bridge/')
+from bridgeclient import BridgeClient
 from tcp import TCPJSONClient
 #import simplejson as json
 json = TCPJSONClient('', 5700)
@@ -19,9 +19,8 @@ s_test.connect('192.168.240.155', 30001) #socket for computer?
 
 
 #robot.LeftRPM = 123
-robot = RobotStatus()
-robot.Value = bridgeclient()
-while(1):
+robot = RobotStatus(BridgeClient())
+while True:
     start = time.time() 
     
     s_test.mysend(robot.generatePacket())
