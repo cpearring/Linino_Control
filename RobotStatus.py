@@ -2,9 +2,9 @@ from struct import *
 
 class RobotStatus:
     def __init__(self, bridge):
-        LeftRPM = 0
-        RightRPM = 0
-        BrakeStatus = 0
+        self.LeftRPM = 0
+        self.RightRPM = 0
+        self.BrakeStatus = 0
         self.bridge = bridge
     
     def updateStatus(self):

@@ -10,12 +10,12 @@ sys.path.insert(0, '/usr/lib/python2.7/bridge/')
 from bridgeclient import BridgeClient
 from tcp import TCPJSONClient
 #import simplejson as json
-json = TCPJSONClient('', 5700)
+json = TCPJSONClient('127.0.0.1', 5700)
 
 
-s_test = MySocket()
-s_test.connect('192.168.240.155', 30001) #socket for computer?
-#s_test.mysend("Hello World")
+gui_socket = MySocket()
+gui_socket.connect('192.168.240.189', 30001) #socket for computer?
+#gui_socket.mysend("Hello World")
 
 
 #robot.LeftRPM = 123
@@ -23,15 +23,16 @@ robot = RobotStatus(BridgeClient())
 while True:
     start = time.time() 
     
-    s_test.mysend(robot.generatePacket())
-    raw_Packet = s_test.myreceive()
+    gui_socket.mysend(robot.generatePacket())
+    raw_Packet = gui_socket.myreceive()
     if raw_Packet is not None:
-            raw_Packet.strip('\x00')
+            #raw_Packet.strip('\x00')
             #print raw_Packet
             #print raw_Packet
-            SetLeftRPM = int(raw_Packet[0:raw_Packet.find(":")])
+            split_colon = raw_Packet.split(':')
+            SetLeftRPM = int(split_colon[0])
             #print "Raw packet.find('\x00') " + str(raw_Packet.find("\x00"))
-            SetRightRPM = int(raw_Packet[raw_Packet.find(":")+1:raw_Packet.find("\x00")])
+            SetRightRPM = int(split_colon[1])
             
             print SetRightRPM;
             print SetLeftRPM;
@@ -47,10 +48,10 @@ while True:
             
     #print "Hanging in json.send?"
     #if CAN message recieved, update our model and then send out new info to control station   
-    robot.updateStatus()
+    #robot.updateStatus()
     end = time.time()
     print "Elapsed time:"
     print end - start
 
-s_test.end()
+gui_socket.end()
 
