@@ -1,23 +1,34 @@
+import sys
 from struct import *
 
+sys.path.insert(0, '/usr/lib/python2.7/bridge/')
+#from bridgeclient import BridgeClient
+from tcp import TCPJSONClient
+
 class RobotStatus:
-    def __init__(self, bridge):
-        self.LeftRPM = 0
-        self.RightRPM = 0
-        self.BrakeStatus = 0
-        self.bridge = bridge
+    def __init__(self):
+        self.left_rpm = 0
+        self.right_rpm = 0
+        self.brake = 0
+        self.json = TCPJSONClient('127.0.0.1', 5700)
     
-    def updateStatus(self):
-        t_string = self.bridge.get('RPM_STATUS')
-        if t_string is not None:
-            self.LeftRPM = int(t_string[0:t_string.find(":")])
-            self.RightRPM = int(t_string[t_string.find(":")+1:])
+    def send(self, key, value):
+        self.json.send({'command': 'put', 'key': key, 'value': value})
+    
+    def request(self, key):
+        self.json.send({'command': 'get', 'key': key})
+    
+    def update_status(self, gui_socket):
+        r = self.json.recv()
+        if r is not None:
+            if r['key'] == 'RPM_STATUS':
+                rpm_status = r['value']
+                rpm_status = rpm_status.split(':')
+                self.left_rpm = int(rpm_status[0])
+                self.right_rpm = int(rpm_status[1])
+            # Send latest info to the GUI
+            gui_socket.send(self.generate_packet())
 
-            print self.LeftRPM
-            print self.RightRPM
-
-    def generatePacket(self):
-        #print "Packing values..."
-        return pack('<hhb', self.RightRPM, self.LeftRPM, self.BrakeStatus)
-        #print "Finished packing"
-        #return ''.join([bin(item) for item in s])
+    def generate_packet(self):
+        return str(self.left_rpm)+':'+str(self.right_rpm)
+        #return pack('<hhb', self.left_rpm, self.right_rpm, self.brake)

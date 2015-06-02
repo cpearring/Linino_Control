@@ -1,7 +1,7 @@
 import socket
 import select
 
-class MySocket:
+class Socket:
     def connect(self, host, port):
         self.UDP_IP = host
         self.UDP_PORT = port  
@@ -9,15 +9,15 @@ class MySocket:
         self.sock.bind(("192.168.240.1", port))
         self.sock.setblocking(0)
 
-    def mysend(self, msg):
+    def send(self, msg):
         self.sock.sendto(msg, (self.UDP_IP, self.UDP_PORT))
 
-    def myreceive(self):
+    def receive(self):
         result = select.select([self.sock],[],[],0)
         if result[0] != []:
             return result[0][0].recv(64) 
         return None
 
-    def end(self):
+    def close(self):
         self.sock.close()
 
