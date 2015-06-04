@@ -6,7 +6,7 @@ class Socket:
         self.UDP_IP = host
         self.UDP_PORT = port  
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(("192.168.240.1", port))
+        self.sock.bind(("0.0.0.0", port))
         self.sock.setblocking(0)
 
     def send(self, msg):
