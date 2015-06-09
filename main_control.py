@@ -17,8 +17,19 @@ robot = RobotStatus()
 while True:
     gui_packet = gui_socket.receive()
     if gui_packet is not None:
-        print("GUI:"+gui_packet)
-        json.send({'command': 'put', 'key': 'SET_RPM', 'value': gui_packet})
+        # Extract packet ID from packet
+        id = gui_packet[0]
+        gui_packet = gui_packet[1:]
+        
+        if id == 'A':
+            print("Got rpm:"+gui_packet)
+            json.send({'command': 'put', 'key': 'SET_RPM', 'value': gui_packet})
+        elif id == 'B':
+            print("Got forward pan:"+gui_packet)
+            json.send({'command': 'put', 'key': 'F_PAN', 'value': gui_packet})
+        elif id == 'C':
+            print("Got forward tilt:"+gui_packet)
+            json.send({'command': 'put', 'key': 'F_TILT', 'value': gui_packet})
     
     if time.clock() - last_request_time >= 0.1:
         robot.request('RPM_STATUS')
