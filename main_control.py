@@ -30,6 +30,9 @@ while True:
         elif id == 'C':
             print("Got forward tilt:"+gui_packet)
             json.send({'command': 'put', 'key': 'F_TILT', 'value': gui_packet})
+        elif id == 'D':
+            print("Got blade move:"+gui_packet)
+            json.send({'command': 'put', 'key': 'BLADE', 'value': gui_packet})
     
     if time.clock() - last_request_time >= 0.1:
         robot.request('RPM_STATUS')
