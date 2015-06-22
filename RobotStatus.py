@@ -7,8 +7,8 @@ from tcp import TCPJSONClient
 
 class RobotStatus:
     def __init__(self):
-        self.left_rpm = 0
-        self.right_rpm = 0
+        self.left_rpm = "NONE"
+        self.right_rpm = "NONE"
         self.brake = 0
         self.json = TCPJSONClient('127.0.0.1', 5700)
     
@@ -24,8 +24,8 @@ class RobotStatus:
             if r['key'] == 'RPM_STATUS':
                 rpm_status = r['value']
                 rpm_status = rpm_status.split(':')
-                self.left_rpm = int(rpm_status[0])
-                self.right_rpm = int(rpm_status[1])
+                self.left_rpm = rpm_status[0]
+                self.right_rpm = rpm_status[1]
             # Send latest info to the GUI
             gui_socket.send(self.generate_packet())
 
