@@ -36,6 +36,7 @@ while True:
     
     if time.clock() - last_request_time >= 0.1:
         robot.request('RPM_STATUS')
+        robot.request('12V_VOLTAGE')
         last_request_time = time.clock()
     
     robot.update_status(gui_socket)
