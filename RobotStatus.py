@@ -20,9 +20,9 @@ class RobotStatus:
     
     def update_status(self, gui_socket):
         r = self.json.recv()
-        print("updating status")
-        if r is not None:
-            print("got message")
+        if r is not None and r['value'] is not None:
+            print("got message:"+str(r))
+            packet = None
             if r['key'] == 'RPM_STATUS':
                 rpm_status = r['value']
                 rpm_status = rpm_status.split(':')
@@ -32,4 +32,5 @@ class RobotStatus:
             elif r['key'] == '12V_VOLTAGE':
                 packet = r['value']
             # Send latest info to the GUI
-            gui_socket.send(r['key']+':'+packet)
+            if packet is not None:
+                gui_socket.send(r['key']+':'+packet)
