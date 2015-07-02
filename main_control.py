@@ -22,15 +22,18 @@ while True:
         gui_packet = gui_packet[1:]
         
         if id == 'A':
-            print("Got rpm:"+gui_packet)
-            json.send({'command': 'put', 'key': 'SET_RPM', 'value': gui_packet})
+            print("Got left rpm:"+gui_packet)
+            json.send({'command': 'put', 'key': 'SET_L_RPM', 'value': gui_packet})
         elif id == 'B':
+            print("Got right rpm:"+gui_packet)
+            json.send({'command': 'put', 'key': 'SET_R_RPM', 'value': gui_packet})
+        elif id == 'C':
             print("Got forward pan:"+gui_packet)
             json.send({'command': 'put', 'key': 'F_PAN', 'value': gui_packet})
-        elif id == 'C':
+        elif id == 'D':
             print("Got forward tilt:"+gui_packet)
             json.send({'command': 'put', 'key': 'F_TILT', 'value': gui_packet})
-        elif id == 'D':
+        elif id == 'E':
             print("Got blade move:"+gui_packet)
             json.send({'command': 'put', 'key': 'BLADE', 'value': gui_packet})
     
