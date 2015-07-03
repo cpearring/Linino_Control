@@ -2,20 +2,27 @@ import socket
 import select
 
 class Socket:
-    def connect(self, host, port):
-        self.UDP_IP = host
-        self.UDP_PORT = port  
+    def bind(self, host, port):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(("0.0.0.0", port))
+        self.sock.bind((host, port))
         self.sock.setblocking(0)
+        self.clients = []
 
     def send(self, msg):
-        self.sock.sendto(msg, (self.UDP_IP, self.UDP_PORT))
+        for client_address in self.clients:
+            self.sock.sendto(msg, client_address)
 
     def receive(self):
         result = select.select([self.sock],[],[],0)
         if result[0] != []:
-            return result[0][0].recv(64) 
+            received = result[0][0].recvfrom(64)
+            message = received[0]
+            address = received[1]
+            if message == "connect me plz":
+                print(str(address) + " has connected")
+                self.clients.append(address)
+            else:
+                return message
         return None
 
     def close(self):

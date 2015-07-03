@@ -8,7 +8,7 @@ from struct import *
 json = TCPJSONClient('127.0.0.1', 5700)
 
 gui_socket = Socket()
-gui_socket.connect('10.10.153.120', 30001) #socket for computer?
+gui_socket.bind('0.0.0.0', 30001) #socket for computer?
 
 start_time = time.clock()
 last_request_time = start_time
