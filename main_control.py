@@ -12,6 +12,7 @@ gui_socket.bind('0.0.0.0', 30001) #socket for computer?
 
 start_time = time.clock()
 last_request_time = start_time
+last_gps_time = start_time
 
 robot = RobotStatus()
 while True:
@@ -41,6 +42,9 @@ while True:
         robot.request('RPM_STATUS')
         robot.request('12V_VOLTAGE')
         last_request_time = time.clock()
+    if time.clock() - last_gps_time >= 2.0:
+        robot.request('GPS')
+        last_gps_time = time.clock()
     
     robot.update_status(gui_socket)
     #end = time.clock()

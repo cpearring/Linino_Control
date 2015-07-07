@@ -29,6 +29,9 @@ class RobotStatus:
                 self.left_rpm = rpm_status[0]
                 self.right_rpm = rpm_status[1]
                 packet = str(self.left_rpm)+':'+str(self.right_rpm)
+            if r['key'] == 'GPS':
+                gps_data = r['value']
+                packet = gps_data
             elif r['key'] == '12V_VOLTAGE':
                 packet = r['value']
             # Send latest info to the GUI
