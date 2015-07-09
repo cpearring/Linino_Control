@@ -38,9 +38,11 @@ while True:
             print("Got blade move:"+gui_packet)
             json.send({'command': 'put', 'key': 'BLADE', 'value': gui_packet})
     
-    if time.clock() - last_request_time >= 0.1:
+    if time.clock() - last_request_time >= 0.25:
         robot.request('RPM_STATUS')
-        robot.request('12V_VOLTAGE')
+        robot.request('P-12E')
+        robot.request('L_MOTOR_TEMP')
+        robot.request('R_MOTOR_TEMP')
         last_request_time = time.clock()
     if time.clock() - last_gps_time >= 2.0:
         robot.request('GPS')
