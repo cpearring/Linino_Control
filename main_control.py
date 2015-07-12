@@ -35,6 +35,9 @@ while True:
             print("Got forward tilt:"+gui_packet)
             json.send({'command': 'put', 'key': 'F_TILT', 'value': gui_packet})
         elif id == 'E':
+            print("Got sadl move:"+gui_packet)
+            json.send({'command': 'put', 'key': 'SADL', 'value': gui_packet})
+        elif id == 'F':
             print("Got blade move:"+gui_packet)
             json.send({'command': 'put', 'key': 'BLADE', 'value': gui_packet})
     
