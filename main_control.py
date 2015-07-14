@@ -47,6 +47,8 @@ while True:
         robot.request('L_MOTOR_TEMP')
         robot.request('R_MOTOR_TEMP')
         robot.request('IMU')
+        robot.request('LWR_A_TEMP')
+        robot.request('UPR_A_TEMP')
         last_request_time = time.clock()
     if time.clock() - last_gps_time >= 2.0:
         robot.request('GPS')
