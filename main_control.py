@@ -11,7 +11,8 @@ gui_socket = Socket()
 gui_socket.bind('0.0.0.0', 30001) #socket for computer?
 
 start_time = time.clock()
-last_request_time = start_time
+last_250ms_time = start_time
+last_500ms_time = start_time
 last_gps_time = start_time
 
 robot = RobotStatus()
@@ -41,21 +42,26 @@ while True:
             print("Got blade move:"+gui_packet)
             json.send({'command': 'put', 'key': 'BLADE', 'value': gui_packet})
     
-    if time.clock() - last_request_time >= 0.25:
+    if time.clock() - last_250ms_time >= 0.25:
         robot.request('RPM_STATUS')
-        robot.request('P-12E')
+        robot.request('VOLT')
         robot.request('L_MOTOR_TEMP')
         robot.request('R_MOTOR_TEMP')
         robot.request('IMU')
         robot.request('LWR_A_TEMP')
         robot.request('UPR_A_TEMP')
-        last_request_time = time.clock()
+        last_250ms_time = time.clock()
+    if time.clock() - last_500ms_time >= 0.5:
+        robot.request('W_WND_SPD')
+        robot.request('W_TEMP')
+        robot.request('W_PR_ALT')
+        last_500ms_time = time.clock()
     if time.clock() - last_gps_time >= 2.0:
         robot.request('GPS')
         last_gps_time = time.clock()
     
     robot.update_status(gui_socket)
-    #end = time.clock()
+    
     #print "Elapsed time:"
     #print end - start_time
 
