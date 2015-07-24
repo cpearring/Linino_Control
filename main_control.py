@@ -46,8 +46,6 @@ while True:
         robot.request('RPM_STATUS')
         robot.request('VOLT')
         robot.request('AMP')
-        robot.request('L_MOTOR_CURRENT')
-        robot.request('R_MOTOR_CURRENT')
         robot.request('L_MOTOR_TEMP')
         robot.request('R_MOTOR_TEMP')
         robot.request('IMU')
