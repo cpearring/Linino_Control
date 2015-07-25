@@ -23,7 +23,10 @@ while True:
         id = gui_packet[0]
         gui_packet = gui_packet[1:]
         
-        if id == 'A':
+        if id == 'Z':
+            print("Got command packet:"+gui_packet)
+            robot.parse_command(gui_packet)
+        elif id == 'A':
             print("Got left rpm:"+gui_packet)
             json.send({'command': 'put', 'key': 'SET_L_RPM', 'value': gui_packet})
         elif id == 'B':
@@ -61,6 +64,7 @@ while True:
         robot.request('GPS')
         last_gps_time = time.clock()
     
+    robot.update_command()
     robot.update_status(gui_socket)
     
     #print "Elapsed time:"

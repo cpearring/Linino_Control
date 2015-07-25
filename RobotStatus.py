@@ -1,3 +1,4 @@
+import time
 import sys
 from struct import *
 
@@ -8,6 +9,7 @@ from tcp import TCPJSONClient
 class RobotStatus:
     def __init__(self):
         self.json = TCPJSONClient('127.0.0.1', 5700)
+        self.command = None
     
     def send(self, key, value):
         self.json.send({'command': 'put', 'key': key, 'value': value})
@@ -21,3 +23,37 @@ class RobotStatus:
             print("got message:"+str(r))
             packet = r['key']+':'+r['value']
             gui_socket.send(packet)
+
+    def update_command(self):
+        if self.command is not None:
+            start_time = self.command[0]
+            duration = self.command[1]
+            if time.clock() - start_time > duration:
+                # Command just finished
+                self.send('SET_L_RPM', '0')
+                self.send('SET_R_RPM', '0')
+                self.command = None
+
+    def parse_command(self, command):
+        parts = command.split(':')
+
+        l_power = 0.0
+        r_power = 0.0
+        if parts[0] == 'FWD':
+            l_power = 100.0
+            r_power = 100.0
+        elif parts[0] == 'REV':
+            l_power = -100.0
+            r_power = -100.0
+        if parts[0] == 'LEFT':
+            l_power = -100.0
+            r_power = 100.0
+        elif parts[0] == 'RIGHT':
+            l_power = 100.0
+            r_power = -100.0
+
+        duration = float(parts[1])
+
+        self.command = (time.clock(), duration)
+        self.send('SET_L_RPM', str(l_power))
+        self.send('SET_R_RPM', str(r_power))

@@ -20,7 +20,8 @@ class Socket:
             address = received[1]
             if message == "connect me plz":
                 print(str(address) + " has connected")
-                self.clients.append(address)
+                if address not in self.clients:
+                    self.clients.append(address)
             else:
                 return message
         return None
