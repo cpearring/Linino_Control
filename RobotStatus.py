@@ -10,6 +10,7 @@ class RobotStatus:
     def __init__(self):
         self.json = TCPJSONClient('127.0.0.1', 5700)
         self.command = None
+        self.tele_files = {}
     
     def send(self, key, value):
         self.json.send({'command': 'put', 'key': key, 'value': value})
@@ -21,8 +22,17 @@ class RobotStatus:
         r = self.json.recv()
         if r is not None and r['value'] is not None:
             print("got message:"+str(r))
-            packet = r['key']+':'+r['value']
+            key = r['key']
+            value = r['value']
+            packet = key+':'+value
             gui_socket.send(packet)
+            
+            # Create telemetry data file if it doesn't exist yet
+            if key not in self.tele_files:
+                self.tele_files[key] = open('mission_data/'+key, 'w')
+            
+            # Write telemetry data to files
+            self.tele_files[key].write(value+'\n')
 
     def update_command(self):
         if self.command is not None:
@@ -36,6 +46,10 @@ class RobotStatus:
 
     def parse_command(self, command):
         parts = command.split(':')
+
+        if len(parts) < 2:
+            print("Invalid command: "+command)
+            return
 
         l_power = 0.0
         r_power = 0.0
