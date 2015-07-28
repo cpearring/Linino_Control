@@ -9,6 +9,10 @@ from tcp import TCPJSONClient
 class RobotStatus:
     def __init__(self):
         self.json = TCPJSONClient('127.0.0.1', 5700)
+
+        self.last_tele_time = time.clock() # Last telemetry bundle packet to GUI
+        self.tele_packet = None
+
         self.command = None
         self.tele_files = {}
     
@@ -25,7 +29,17 @@ class RobotStatus:
             key = r['key']
             value = r['value']
             packet = key+':'+value
-            gui_socket.send(packet)
+
+            if self.tele_packet is None:
+                # Starting a new telemetry bundle packet
+                self.tele_packet = packet
+            else:
+                # Adding onto our telemetry bundle packet
+                self.tele_packet += '|'+packet
+
+                # Send the packet if it got too big
+                if len(self.tele_packet) > 400:
+                    self.send_tele_packet(gui_socket)
             
             # Create telemetry data file if it doesn't exist yet
             if key not in self.tele_files:
@@ -33,6 +47,15 @@ class RobotStatus:
             
             # Write telemetry data to files
             self.tele_files[key].write(value+'\n')
+
+        if time.clock() - self.last_tele_time > 0.5:
+            self.send_tele_packet(gui_socket)
+
+    def send_tele_packet(self, gui_socket):
+        if self.tele_packet is not None:
+            self.last_tele_time = time.clock()
+            gui_socket.send(self.tele_packet)
+            self.tele_packet = None
 
     def update_command(self):
         if self.command is not None:

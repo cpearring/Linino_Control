@@ -46,7 +46,6 @@ while True:
             json.send({'command': 'put', 'key': 'BLADE', 'value': gui_packet})
     
     if time.clock() - last_250ms_time >= 0.25:
-        robot.request('RPM_STATUS')
         robot.request('VOLT')
         robot.request('AMP')
         robot.request('L_MOTOR_TEMP')
