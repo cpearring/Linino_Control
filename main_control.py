@@ -1,18 +1,16 @@
 #!/usr/bin/python
 
-import time
+import rclock
 from RobotStatus import *
 from Socket import *
 from struct import *
 
-json = TCPJSONClient('127.0.0.1', 5700)
-
 gui_socket = Socket()
 gui_socket.bind('0.0.0.0', 30001) #socket for computer?
 
-start_time = time.clock()
-last_250ms_time = start_time
+start_time = rclock.clock()
 last_500ms_time = start_time
+last_1000ms_time = start_time
 last_gps_time = start_time
 
 robot = RobotStatus()
@@ -28,24 +26,24 @@ while True:
             robot.parse_command(gui_packet)
         elif id == 'A':
             print("Got left rpm:"+gui_packet)
-            json.send({'command': 'put', 'key': 'SET_L_RPM', 'value': gui_packet})
+            robot.send('SET_L_RPM', gui_packet)
         elif id == 'B':
             print("Got right rpm:"+gui_packet)
-            json.send({'command': 'put', 'key': 'SET_R_RPM', 'value': gui_packet})
+            robot.send('SET_R_RPM', gui_packet)
         elif id == 'C':
             print("Got forward pan:"+gui_packet)
-            json.send({'command': 'put', 'key': 'F_PAN', 'value': gui_packet})
+            robot.send('F_PAN', gui_packet)
         elif id == 'D':
             print("Got forward tilt:"+gui_packet)
-            json.send({'command': 'put', 'key': 'F_TILT', 'value': gui_packet})
+            robot.send('F_TILT', gui_packet)
         elif id == 'E':
             print("Got sadl move:"+gui_packet)
-            json.send({'command': 'put', 'key': 'SADL', 'value': gui_packet})
+            robot.send('SADL', gui_packet)
         elif id == 'F':
             print("Got blade move:"+gui_packet)
-            json.send({'command': 'put', 'key': 'BLADE', 'value': gui_packet})
+            robot.send('BLADE', gui_packet)
     
-    if time.clock() - last_250ms_time >= 0.25:
+    if rclock.clock() - last_500ms_time >= 0.5:
         robot.request('VOLT')
         robot.request('AMP')
         robot.request('L_MOTOR_TEMP')
@@ -53,15 +51,15 @@ while True:
         robot.request('IMU')
         robot.request('LWR_A_TEMP')
         robot.request('UPR_A_TEMP')
-        last_250ms_time = time.clock()
-    if time.clock() - last_500ms_time >= 0.5:
+        last_500ms_time = rclock.clock()
+    if rclock.clock() - last_1000ms_time >= 1.0:
         robot.request('W_WND_SPD')
         robot.request('W_TEMP')
         robot.request('W_PR_ALT')
-        last_500ms_time = time.clock()
-    if time.clock() - last_gps_time >= 2.0:
+        last_1000ms_time = rclock.clock()
+    if rclock.clock() - last_gps_time >= 2.0:
         robot.request('GPS')
-        last_gps_time = time.clock()
+        last_gps_time = rclock.clock()
     
     robot.update_command()
     robot.update_status(gui_socket)

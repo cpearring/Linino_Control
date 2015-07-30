@@ -1,4 +1,4 @@
-import time
+import rclock
 import sys
 from struct import *
 
@@ -10,7 +10,7 @@ class RobotStatus:
     def __init__(self):
         self.json = TCPJSONClient('127.0.0.1', 5700)
 
-        self.last_tele_time = time.clock() # Last telemetry bundle packet to GUI
+        self.last_tele_time = rclock.clock() # Last telemetry bundle packet to GUI
         self.tele_packet = None
 
         self.command = None
@@ -25,7 +25,7 @@ class RobotStatus:
     def update_status(self, gui_socket):
         r = self.json.recv()
         if r is not None and r['value'] is not None:
-            print("got message:"+str(r))
+            #print("got message:"+str(r))
             key = r['key']
             value = r['value']
             packet = key+':'+value
@@ -43,17 +43,17 @@ class RobotStatus:
             
             # Create telemetry data file if it doesn't exist yet
             if key not in self.tele_files:
-                self.tele_files[key] = open('mission_data/'+key, 'w')
+                self.tele_files[key] = open('/mnt/sda1/mission_data/'+key, 'w')
             
             # Write telemetry data to files
             self.tele_files[key].write(value+'\n')
 
-        if time.clock() - self.last_tele_time > 0.5:
+        if rclock.clock() - self.last_tele_time > 0.5:
             self.send_tele_packet(gui_socket)
 
     def send_tele_packet(self, gui_socket):
         if self.tele_packet is not None:
-            self.last_tele_time = time.clock()
+            self.last_tele_time = rclock.clock()
             gui_socket.send(self.tele_packet)
             self.tele_packet = None
 
@@ -61,8 +61,9 @@ class RobotStatus:
         if self.command is not None:
             start_time = self.command[0]
             duration = self.command[1]
-            if time.clock() - start_time > duration:
+            if rclock.clock() - start_time > duration:
                 # Command just finished
+                print("finished command at "+str(rclock.clock()))
                 self.send('SET_L_RPM', '0')
                 self.send('SET_R_RPM', '0')
                 self.command = None
@@ -91,6 +92,8 @@ class RobotStatus:
 
         duration = float(parts[1])
 
-        self.command = (time.clock(), duration)
+        print("applying command at "+str(rclock.clock()))
+
+        self.command = (rclock.clock(), duration)
         self.send('SET_L_RPM', str(l_power))
         self.send('SET_R_RPM', str(r_power))
