@@ -1,6 +1,10 @@
 import rclock
 import sys
+import socket
+import select
 from struct import *
+
+from Socket import TcpClient
 
 sys.path.insert(0, '/usr/lib/python2.7/bridge/')
 #from bridgeclient import BridgeClient
@@ -10,14 +14,17 @@ class RobotStatus:
     def __init__(self):
         self.json = TCPJSONClient('127.0.0.1', 5700)
 
+        # Connection to YunServer
+        self.yun_sock = TcpClient('127.0.0.1', 5555)
+
         self.last_tele_time = rclock.clock() # Last telemetry bundle packet to GUI
         self.tele_packet = None
 
         self.command = None
         self.tele_files = {}
     
-    def send(self, key, value):
-        self.json.send({'command': 'put', 'key': key, 'value': value})
+    def send(self, packet):
+        self.yun_sock.send(packet)
     
     def request(self, key):
         self.json.send({'command': 'get', 'key': key})

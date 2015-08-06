@@ -19,29 +19,14 @@ while True:
     if gui_packet is not None:
         # Extract packet ID from packet
         id = gui_packet[0]
-        gui_packet = gui_packet[1:]
+
+        print("Got packet:"+gui_packet)
         
         if id == 'Z':
             print("Got command packet:"+gui_packet)
             robot.parse_command(gui_packet)
-        elif id == 'A':
-            print("Got left rpm:"+gui_packet)
-            robot.send('SET_L_RPM', gui_packet)
-        elif id == 'B':
-            print("Got right rpm:"+gui_packet)
-            robot.send('SET_R_RPM', gui_packet)
-        elif id == 'C':
-            print("Got forward pan:"+gui_packet)
-            robot.send('F_PAN', gui_packet)
-        elif id == 'D':
-            print("Got forward tilt:"+gui_packet)
-            robot.send('F_TILT', gui_packet)
-        elif id == 'E':
-            print("Got sadl move:"+gui_packet)
-            robot.send('SADL', gui_packet)
-        elif id == 'F':
-            print("Got blade move:"+gui_packet)
-            robot.send('BLADE', gui_packet)
+        else:
+            robot.send(gui_packet+'|')
     
     if rclock.clock() - last_500ms_time >= 0.5:
         robot.request('VOLT')

@@ -29,3 +29,21 @@ class Socket:
     def close(self):
         self.sock.close()
 
+
+class TcpClient:
+    def __init__(self, host, port):
+        self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.conn.connect((host, port))
+        self.conn.setblocking(0)
+
+    def send(self, msg):
+        self.conn.sendall(msg)
+
+    def receive(self):
+        try:
+            return self.recv()
+        except e:
+            return None
+
+    def close(self):
+        self.conn.close()
