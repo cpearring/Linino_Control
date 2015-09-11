@@ -41,8 +41,8 @@ class TcpClient:
 
     def receive(self):
         try:
-            return self.recv()
-        except e:
+            return self.conn.recv(512)
+        except:
             return None
 
     def close(self):
