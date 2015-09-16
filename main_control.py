@@ -19,7 +19,7 @@ while True:
         
         if id == 'Z':
             print("Got command packet:"+gui_packet)
-            robot.parse_command(gui_packet)
+            robot.parse_command(gui_packet[1:])
         else:
             robot.send(gui_packet+'|')
     

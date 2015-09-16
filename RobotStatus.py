@@ -69,8 +69,8 @@ class RobotStatus:
             if rclock.clock() - start_time > duration:
                 # Command just finished
                 print("finished command at "+str(rclock.clock()))
-                self.send('A0')
-                self.send('B0')
+                self.send('A0|')
+                self.send('B0|')
                 self.command = None
 
     def parse_command(self, command):
@@ -100,5 +100,5 @@ class RobotStatus:
         print("applying command at "+str(rclock.clock()))
 
         self.command = (rclock.clock(), duration)
-        self.send('A'+str(l_power))
-        self.send('B'+str(r_power))
+        self.send('A'+str(l_power)+'|')
+        self.send('B'+str(r_power)+'|')
