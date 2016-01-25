@@ -75,24 +75,26 @@ class RobotStatus:
     def parse_command(self, command):
         parts = command.split(':')
 
-        if len(parts) < 2:
+        if len(parts) < 3:
             print("Invalid command: "+command)
             return
+
+        speed = float(parts[2])
 
         l_power = 0.0
         r_power = 0.0
         if parts[0] == 'FWD':
-            l_power = 100.0
-            r_power = 100.0
+            l_power = speed
+            r_power = speed
         elif parts[0] == 'REV':
-            l_power = -100.0
-            r_power = -100.0
+            l_power = -speed
+            r_power = -speed
         if parts[0] == 'LEFT':
-            l_power = -100.0
-            r_power = 100.0
+            l_power = -speed
+            r_power = speed
         elif parts[0] == 'RIGHT':
-            l_power = 100.0
-            r_power = -100.0
+            l_power = speed
+            r_power = -speed
 
         duration = float(parts[1])
 
