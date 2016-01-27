@@ -59,7 +59,7 @@ class RobotStatus:
     def send_tele_packet(self, gui_socket):
         if self.tele_packet is not None:
             self.last_tele_time = rclock.clock()
-            gui_socket.send(self.tele_packet)
+            gui_socket.broadcast(self.tele_packet)
             self.tele_packet = None
 
     def update_command(self):
@@ -79,7 +79,10 @@ class RobotStatus:
             print("Invalid command: "+command)
             return
 
-        speed = float(parts[2])
+        try:
+            speed = int(float(parts[2])*100.0)
+        except ValueError:
+            speed = int(float(int(parts[2]))*100.0)
 
         l_power = 0.0
         r_power = 0.0
@@ -96,7 +99,10 @@ class RobotStatus:
             l_power = speed
             r_power = -speed
 
-        duration = float(parts[1])
+        try:
+            duration = float(parts[1])
+        except ValueError:
+            duration = float(int(parts[1]))
 
         print("applying command at "+str(rclock.clock()))
 
